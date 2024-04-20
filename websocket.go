@@ -19,12 +19,6 @@ type WebSocketClient struct {
 	option *WebSocketClientOption
 }
 
-// NewWebSocketClient is a function used to create a new websocket client.
-func NewWebSocketClient(ctx context.Context, option *WebSocketClientOption) (*WebSocketClient, error) {
-	// todo: 2024/4/20|sean|implement this function
-	panic("not implemented")
-}
-
 // Dial is a function used to create a new websocket client.
 func Dial(option *WebSocketClientOption) (*WebSocketClient, error) {
 	return DialWithContext(context.Background(), option)
