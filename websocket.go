@@ -25,6 +25,10 @@ func Dial(option *WebSocketClientOption) (*WebSocketClient, error) {
 
 // DialWithContext is a function used to create a new websocket client.
 func DialWithContext(ctx context.Context, option *WebSocketClientOption) (*WebSocketClient, error) {
+	if option.Endpoint == "" {
+		option.Endpoint = defaultWebSocketClientEndpoint
+	}
+
 	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, option.Endpoint, nil)
 	if err != nil {
 		return nil, err
