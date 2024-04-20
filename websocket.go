@@ -15,7 +15,8 @@ type WebSocketClientOption struct {
 
 // WebSocketClient is a struct that represents the websocket client.
 type WebSocketClient struct {
-	conn *websocket.Conn
+	conn   *websocket.Conn
+	option *WebSocketClientOption
 }
 
 // NewWebSocketClient is a function used to create a new websocket client.
@@ -42,12 +43,22 @@ func DialWithContext(ctx context.Context, option *WebSocketClientOption) (*WebSo
 	defer resp.Body.Close()
 
 	return &WebSocketClient{
-		conn: conn,
+		conn:   conn,
+		option: option,
 	}, nil
 }
 
 // Auth sends an authentication message to the Fugle API.
 func (c *WebSocketClient) Auth() error {
-	// todo: 2024/4/20|sean|implement this function
-	panic("not implemented")
+	return c.AuthWithKey(c.option.APIKey)
+}
+
+// AuthWithKey sends an authentication message to the Fugle API.
+func (c *WebSocketClient) AuthWithKey(key string) error {
+	return c.conn.WriteJSON(map[string]any{
+		"event": "auth",
+		"data": map[string]string{
+			"apikey": key,
+		},
+	})
 }
