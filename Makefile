@@ -1,8 +1,14 @@
+# Variables
+GO := go
+BUILD_DIR := build
+BIN_DIR := $(BUILD_DIR)/bin
+LDFLAGS := -w -s
+
 VERSION := $(shell git describe --tags --always)
 
 # Targets
 .PHONY: all help version
-.PHONY: lint
+.PHONY: lint clean
 
 all: help
 
@@ -13,5 +19,15 @@ help: ## show help
 version: ## show version
 	@echo $(VERSION)
 
+clean: ## clean build directory
+	@rm -rf $(BUILD_DIR)
+
+## go
 lint: ## run golangci-lint
 	@golangci-lint run ./...
+
+build: ## build binary
+	$(GO) build -ldflags "$(LDFLAGS)" ./...
+
+test: ## run tests
+	$(GO) test -v ./...
