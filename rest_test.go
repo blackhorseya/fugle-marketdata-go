@@ -17,7 +17,13 @@ func TestNewRestClient(t *testing.T) {
 	}{
 		{
 			name:    "invalid url then error",
-			args:    args{option: &RestClientOption{Endpoint: "invalid"}},
+			args:    args{option: &RestClientOption{Endpoint: "invalid", APIKey: "key"}},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "empty api key then error",
+			args:    args{option: &RestClientOption{Endpoint: "", APIKey: ""}},
 			want:    nil,
 			wantErr: true,
 		},

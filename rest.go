@@ -29,6 +29,10 @@ func NewRestClient(option *RestClientOption) (*RestClient, error) {
 		return nil, fmt.Errorf("parse rest client endpoint failed: %w", err)
 	}
 
+	if option.APIKey == "" {
+		return nil, fmt.Errorf("rest client api key is required")
+	}
+
 	// todo: 2024/4/20|sean|implement the rest client
 
 	return &RestClient{
