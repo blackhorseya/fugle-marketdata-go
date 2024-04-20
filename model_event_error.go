@@ -1,13 +1,13 @@
 package fugle_marketdata
 
-// ErrorEventResponse is a struct that represents the error event response.
-type ErrorEventResponse struct {
+// ErrorEvent is a struct that represents the error event response.
+type ErrorEvent struct {
 	Event string `json:"event"`
 	Data  struct {
 		Message string `json:"message"`
 	} `json:"data"`
 }
 
-func (e *ErrorEventResponse) GetEvent() string {
+func (e *ErrorEvent) GetEvent() string {
 	return e.Event
 }
