@@ -15,7 +15,7 @@ type WebSocketClientOption struct {
 
 // WebSocketClient is a struct that represents the websocket client.
 type WebSocketClient struct {
-	conn   *websocket.Conn
+	Conn   *websocket.Conn
 	option *WebSocketClientOption
 }
 
@@ -37,7 +37,7 @@ func DialWithContext(ctx context.Context, option *WebSocketClientOption) (*WebSo
 	defer resp.Body.Close()
 
 	return &WebSocketClient{
-		conn:   conn,
+		Conn:   conn,
 		option: option,
 	}, nil
 }
@@ -49,10 +49,33 @@ func (c *WebSocketClient) Auth() error {
 
 // AuthWithKey sends an authentication message to the Fugle API.
 func (c *WebSocketClient) AuthWithKey(key string) error {
-	return c.conn.WriteJSON(map[string]any{
+	return c.Conn.WriteJSON(map[string]any{
 		"event": "auth",
 		"data": map[string]string{
 			"apikey": key,
 		},
 	})
+}
+
+// ReadMessage reads a message from the Fugle API.
+func (c *WebSocketClient) ReadMessage() (ch chan IEvent, err error) {
+	retCh := make(chan IEvent)
+
+	go func() {
+		for {
+			_, message, err2 := c.Conn.ReadMessage()
+			if err2 != nil {
+				continue
+			}
+
+			event, err2 := UnmarshalEvent(message)
+			if err2 != nil {
+				continue
+			}
+
+			retCh <- event
+		}
+	}()
+
+	return retCh, nil
 }
