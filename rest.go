@@ -2,6 +2,7 @@ package fugle_marketdata
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 )
 
@@ -16,6 +17,8 @@ type RestClientOption struct {
 // RestClient is a struct that represents the rest client.
 type RestClient struct {
 	option *RestClientOption
+
+	httpclient *http.Client
 }
 
 // NewRestClient is a function used to create a new rest client.
@@ -33,9 +36,8 @@ func NewRestClient(option *RestClientOption) (*RestClient, error) {
 		return nil, fmt.Errorf("rest client api key is required")
 	}
 
-	// todo: 2024/4/20|sean|implement the rest client
-
 	return &RestClient{
-		option: option,
+		option:     option,
+		httpclient: http.DefaultClient,
 	}, nil
 }
