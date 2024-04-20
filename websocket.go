@@ -45,3 +45,9 @@ func DialWithContext(ctx context.Context, option *WebSocketClientOption) (*WebSo
 		conn: conn,
 	}, nil
 }
+
+// Auth sends an authentication message to the Fugle API.
+func (c *WebSocketClient) Auth() error {
+	// todo: 2024/4/20|sean|implement this function
+	panic("not implemented")
+}
