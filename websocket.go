@@ -1,6 +1,8 @@
 package fugle_marketdata
 
 import (
+	"time"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -44,31 +46,35 @@ func (client *WebSocketClient) Connect() error {
 
 // Close is a function used to close the websocket connection.
 func (client *WebSocketClient) Close() error {
-	// deadline := time.Now().Add(time.Minute)
-	// err := client.Conn.WriteControl(
-	// 	websocket.CloseMessage,
-	// 	websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
-	// 	deadline,
-	// )
-	// if err != nil {
-	// 	return err
-	// }
+	deadline := time.Now().Add(time.Minute)
+	err := client.Conn.WriteControl(
+		websocket.CloseMessage,
+		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+		deadline,
+	)
+	if err != nil {
+		return err
+	}
 
-	// todo: 2024/4/30|sean|send close message to server
+	err = client.Conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	if err != nil {
+		return err
+	}
 
-	return client.Conn.Close()
-}
-
-// OnMessage is a function used to handle the message from the websocket server.
-func (client *WebSocketClient) OnMessage(handler func(message string)) {
-	go func() {
-		for {
-			_, message, err := client.Conn.ReadMessage()
-			if err != nil {
-				panic(err)
-			}
-
-			handler(string(message))
+	for {
+		_, _, err = client.Conn.NextReader()
+		if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+			break
 		}
-	}()
+		if err != nil {
+			break
+		}
+	}
+
+	err = client.Conn.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
