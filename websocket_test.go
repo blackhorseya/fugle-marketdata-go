@@ -5,12 +5,18 @@ import (
 )
 
 func TestNewConnection(t *testing.T) {
-	client, err := Dial(WebSocketClientOption{})
+	client, err := NewWebSocketClient(WebSocketClientOption{})
 	if err != nil {
-		t.Fatalf("Dial() failed: %v", err)
+		t.Fatalf("Failed to create a new websocket client: %v", err)
 	}
 
+	err = client.Connect()
+	if err != nil {
+		t.Fatalf("Failed to connect to the websocket server: %v", err)
+	}
+	defer client.Close()
+
 	if client.Conn == nil {
-		t.Fatalf("client.Conn is nil")
+		t.Fatalf("The websocket connection is nil.")
 	}
 }

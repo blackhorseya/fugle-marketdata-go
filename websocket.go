@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"golang.org/x/net/context"
 )
 
 const defaultWebSocketClientEndpoint = "wss://api.fugle.tw/marketdata/v1.0/stock/streaming"
@@ -21,33 +20,34 @@ type WebSocketClient struct {
 	option WebSocketClientOption
 }
 
-// Dial is a function used to create a new websocket client.
-func Dial(option WebSocketClientOption) (*WebSocketClient, error) {
-	return DialWithContext(context.Background(), option)
-}
-
-// DialWithContext is a function used to create a new websocket client.
-func DialWithContext(ctx context.Context, option WebSocketClientOption) (*WebSocketClient, error) {
+// NewWebSocketClient is a function used to create a new websocket client.
+func NewWebSocketClient(option WebSocketClientOption) (*WebSocketClient, error) {
 	if option.Endpoint == "" {
 		option.Endpoint = defaultWebSocketClientEndpoint
 	}
 
-	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, option.Endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
 	return &WebSocketClient{
-		Conn:   conn,
+		Conn:   nil,
 		option: option,
 	}, nil
 }
 
+// Connect is a function used to connect to the websocket server.
+func (client *WebSocketClient) Connect() error {
+	conn, resp, err := websocket.DefaultDialer.Dial(client.option.Endpoint, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	client.Conn = conn
+	return nil
+}
+
 // Close is a function used to close the websocket connection.
-func (c *WebSocketClient) Close() error {
+func (client *WebSocketClient) Close() error {
 	deadline := time.Now().Add(time.Minute)
-	err := c.Conn.WriteControl(
+	err := client.Conn.WriteControl(
 		websocket.CloseMessage,
 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
 		deadline,
@@ -60,13 +60,13 @@ func (c *WebSocketClient) Close() error {
 }
 
 // Auth sends an authentication message to the Fugle API.
-func (c *WebSocketClient) Auth() error {
-	return c.AuthWithKey(c.option.APIKey)
+func (client *WebSocketClient) Auth() error {
+	return client.AuthWithKey(client.option.APIKey)
 }
 
 // AuthWithKey sends an authentication message to the Fugle API.
-func (c *WebSocketClient) AuthWithKey(key string) error {
-	return c.Conn.WriteJSON(map[string]any{
+func (client *WebSocketClient) AuthWithKey(key string) error {
+	return client.Conn.WriteJSON(map[string]any{
 		"event": "auth",
 		"data": map[string]string{
 			"apikey": key,
