@@ -92,3 +92,11 @@ func (client *WebSocketClient) Close() error {
 
 	return nil
 }
+
+// IsConnected is a function used to check if the websocket client is connected.
+func (client *WebSocketClient) IsConnected() bool {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	return client.isConnected
+}
