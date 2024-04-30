@@ -1,6 +1,7 @@
 package fugle_marketdata
 
 import (
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -16,8 +17,11 @@ type WebSocketClientOption struct {
 
 // WebSocketClient is a struct that represents the websocket client.
 type WebSocketClient struct {
-	Conn   *websocket.Conn
-	option WebSocketClientOption
+	Conn *websocket.Conn
+
+	mu          sync.Mutex
+	option      WebSocketClientOption
+	isConnected bool
 }
 
 // NewWebSocketClient is a function used to create a new websocket client.
@@ -27,8 +31,10 @@ func NewWebSocketClient(option WebSocketClientOption) (*WebSocketClient, error) 
 	}
 
 	return &WebSocketClient{
-		Conn:   nil,
-		option: option,
+		Conn:        nil,
+		mu:          sync.Mutex{},
+		option:      option,
+		isConnected: false,
 	}, nil
 }
 
