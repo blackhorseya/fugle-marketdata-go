@@ -60,6 +60,13 @@ func (client *WebSocketClient) Connect() error {
 
 // Close is a function used to close the websocket connection.
 func (client *WebSocketClient) Close() error {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	if !client.isConnected {
+		return nil
+	}
+
 	deadline := time.Now().Add(time.Minute)
 	err := client.Conn.WriteControl(
 		websocket.CloseMessage,
@@ -84,6 +91,8 @@ func (client *WebSocketClient) Close() error {
 			break
 		}
 	}
+
+	client.isConnected = false
 
 	err = client.Conn.Close()
 	if err != nil {
