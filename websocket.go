@@ -61,12 +61,14 @@ func (client *WebSocketClient) Close() error {
 
 // OnMessage is a function used to handle the message from the websocket server.
 func (client *WebSocketClient) OnMessage(handler func(message string)) {
-	for {
-		_, message, err := client.Conn.ReadMessage()
-		if err != nil {
-			panic(err)
-		}
+	go func() {
+		for {
+			_, message, err := client.Conn.ReadMessage()
+			if err != nil {
+				panic(err)
+			}
 
-		handler(string(message))
-	}
+			handler(string(message))
+		}
+	}()
 }
