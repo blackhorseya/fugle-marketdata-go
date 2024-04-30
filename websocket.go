@@ -8,7 +8,7 @@ import (
 )
 
 // MessageHandler is a function type that represents the message handler.
-type MessageHandler func([]byte) error
+type MessageHandler func([]byte)
 type ErrorHandler func(error)
 
 const defaultWebSocketClientEndpoint = "wss://api.fugle.tw/marketdata/v1.0/stock/streaming"
@@ -64,6 +64,9 @@ func (client *WebSocketClient) Connect() error {
 
 	client.Conn = conn
 	client.isConnected = true
+
+	go client.listen()
+
 	return nil
 }
 
@@ -117,4 +120,36 @@ func (client *WebSocketClient) IsConnected() bool {
 	defer client.mu.Unlock()
 
 	return client.isConnected
+}
+
+// OnMessage is a function used to set the message handler.
+func (client *WebSocketClient) OnMessage(handler MessageHandler) {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	client.onMessage = handler
+}
+
+// OnError is a function used to set the error handler.
+func (client *WebSocketClient) OnError(handler ErrorHandler) {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	client.onError = handler
+}
+
+func (client *WebSocketClient) listen() {
+	for client.isConnected {
+		_, message, err := client.Conn.ReadMessage()
+		if err != nil {
+			if client.onError != nil {
+				client.onError(err)
+			}
+			client.isConnected = false
+			break
+		}
+		if client.onMessage != nil {
+			client.onMessage(message)
+		}
+	}
 }
