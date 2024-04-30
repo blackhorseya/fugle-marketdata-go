@@ -16,16 +16,16 @@ type WebSocketClientOption struct {
 // WebSocketClient is a struct that represents the websocket client.
 type WebSocketClient struct {
 	Conn   *websocket.Conn
-	option *WebSocketClientOption
+	option WebSocketClientOption
 }
 
 // Dial is a function used to create a new websocket client.
-func Dial(option *WebSocketClientOption) (*WebSocketClient, error) {
+func Dial(option WebSocketClientOption) (*WebSocketClient, error) {
 	return DialWithContext(context.Background(), option)
 }
 
 // DialWithContext is a function used to create a new websocket client.
-func DialWithContext(ctx context.Context, option *WebSocketClientOption) (*WebSocketClient, error) {
+func DialWithContext(ctx context.Context, option WebSocketClientOption) (*WebSocketClient, error) {
 	if option.Endpoint == "" {
 		option.Endpoint = defaultWebSocketClientEndpoint
 	}
