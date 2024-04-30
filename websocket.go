@@ -7,6 +7,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// MessageHandler is a function type that represents the message handler.
+type MessageHandler func([]byte) error
+type ErrorHandler func(error)
+
 const defaultWebSocketClientEndpoint = "wss://api.fugle.tw/marketdata/v1.0/stock/streaming"
 
 // WebSocketClientOption is a struct that represents the websocket client option.
@@ -22,6 +26,9 @@ type WebSocketClient struct {
 	mu          sync.Mutex
 	option      WebSocketClientOption
 	isConnected bool
+
+	onMessage MessageHandler
+	onError   ErrorHandler
 }
 
 // NewWebSocketClient is a function used to create a new websocket client.
@@ -35,6 +42,8 @@ func NewWebSocketClient(option WebSocketClientOption) (*WebSocketClient, error) 
 		mu:          sync.Mutex{},
 		option:      option,
 		isConnected: false,
+		onMessage:   nil,
+		onError:     nil,
 	}, nil
 }
 
