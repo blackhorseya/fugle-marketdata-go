@@ -1,6 +1,8 @@
 package fugle_marketdata
 
 import (
+	"time"
+
 	"github.com/gorilla/websocket"
 	"golang.org/x/net/context"
 )
@@ -40,6 +42,21 @@ func DialWithContext(ctx context.Context, option WebSocketClientOption) (*WebSoc
 		Conn:   conn,
 		option: option,
 	}, nil
+}
+
+// Close is a function used to close the websocket connection.
+func (c *WebSocketClient) Close() error {
+	deadline := time.Now().Add(time.Minute)
+	err := c.Conn.WriteControl(
+		websocket.CloseMessage,
+		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+		deadline,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Auth sends an authentication message to the Fugle API.
