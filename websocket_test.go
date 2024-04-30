@@ -19,4 +19,8 @@ func TestNewConnection(t *testing.T) {
 	if client.Conn == nil {
 		t.Fatalf("The websocket connection is nil.")
 	}
+
+	client.OnMessage(func(message string) {
+		t.Logf("Message: %s", message)
+	})
 }
