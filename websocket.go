@@ -1,8 +1,6 @@
 package fugle_marketdata
 
 import (
-	"time"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -46,30 +44,17 @@ func (client *WebSocketClient) Connect() error {
 
 // Close is a function used to close the websocket connection.
 func (client *WebSocketClient) Close() error {
-	deadline := time.Now().Add(time.Minute)
-	err := client.Conn.WriteControl(
-		websocket.CloseMessage,
-		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
-		deadline,
-	)
-	if err != nil {
-		return err
-	}
+	// deadline := time.Now().Add(time.Minute)
+	// err := client.Conn.WriteControl(
+	// 	websocket.CloseMessage,
+	// 	websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+	// 	deadline,
+	// )
+	// if err != nil {
+	// 	return err
+	// }
 
-	return nil
-}
+	// todo: 2024/4/30|sean|send close message to server
 
-// Auth sends an authentication message to the Fugle API.
-func (client *WebSocketClient) Auth() error {
-	return client.AuthWithKey(client.option.APIKey)
-}
-
-// AuthWithKey sends an authentication message to the Fugle API.
-func (client *WebSocketClient) AuthWithKey(key string) error {
-	return client.Conn.WriteJSON(map[string]any{
-		"event": "auth",
-		"data": map[string]string{
-			"apikey": key,
-		},
-	})
+	return client.Conn.Close()
 }
