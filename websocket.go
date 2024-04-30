@@ -56,26 +56,3 @@ func (c *WebSocketClient) AuthWithKey(key string) error {
 		},
 	})
 }
-
-// ReadMessage reads a message from the Fugle API.
-func (c *WebSocketClient) ReadMessage() (ch chan IEvent, err error) {
-	retCh := make(chan IEvent)
-
-	go func() {
-		for {
-			_, message, err2 := c.Conn.ReadMessage()
-			if err2 != nil {
-				continue
-			}
-
-			event, err2 := UnmarshalEvent(message)
-			if err2 != nil {
-				continue
-			}
-
-			retCh <- event
-		}
-	}()
-
-	return retCh, nil
-}
