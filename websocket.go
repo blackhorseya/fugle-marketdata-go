@@ -64,7 +64,7 @@ func (client *WebSocketClient) OnMessage(handler func(message string)) {
 	for {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
-			break
+			panic(err)
 		}
 
 		handler(string(message))
