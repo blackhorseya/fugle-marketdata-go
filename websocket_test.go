@@ -16,6 +16,11 @@ func TestNewConnection(t *testing.T) {
 	}
 	defer client.Close()
 
+	connected := client.IsConnected()
+	if !connected {
+		t.Fatalf("The websocket client is not connected.")
+	}
+
 	if client.Conn == nil {
 		t.Fatalf("The websocket connection is nil.")
 	}
