@@ -40,6 +40,13 @@ func NewWebSocketClient(option WebSocketClientOption) (*WebSocketClient, error) 
 
 // Connect is a function used to connect to the websocket server.
 func (client *WebSocketClient) Connect() error {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	if client.isConnected {
+		return nil
+	}
+
 	conn, resp, err := websocket.DefaultDialer.Dial(client.option.Endpoint, nil)
 	if err != nil {
 		return err
@@ -47,6 +54,7 @@ func (client *WebSocketClient) Connect() error {
 	defer resp.Body.Close()
 
 	client.Conn = conn
+	client.isConnected = true
 	return nil
 }
 
