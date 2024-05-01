@@ -2,7 +2,6 @@ package fugle_marketdata
 
 import (
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -79,27 +78,12 @@ func (client *WebSocketClient) Close() error {
 		return nil
 	}
 
+	client.isConnected = false
+
 	err := client.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	if err != nil {
 		return err
 	}
-
-	err = client.Conn.SetReadDeadline(time.Now().Add(5 * time.Second))
-	if err != nil {
-		return err
-	}
-
-	for {
-		_, _, err = client.Conn.NextReader()
-		if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
-			break
-		}
-		if err != nil {
-			break
-		}
-	}
-
-	client.isConnected = false
 
 	err = client.Conn.Close()
 	if err != nil {
