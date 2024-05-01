@@ -10,6 +10,14 @@ func TestNewConnection(t *testing.T) {
 		t.Fatalf("Failed to create a new websocket client: %v", err)
 	}
 
+	client.OnMessage(func(message string) {
+		t.Logf("Received message: %v", message)
+	})
+
+	client.OnError(func(err error) {
+		t.Logf("Received error: %v", err)
+	})
+
 	err = client.Connect()
 	if err != nil {
 		t.Fatalf("Failed to connect to the websocket server: %v", err)

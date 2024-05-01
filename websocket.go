@@ -7,7 +7,9 @@ import (
 )
 
 // MessageHandler is a function type that represents the message handler.
-type MessageHandler func([]byte)
+type MessageHandler func(string)
+
+// ErrorHandler is a function type that represents the error handler.
 type ErrorHandler func(error)
 
 const defaultWebSocketClientEndpoint = "wss://api.fugle.tw/marketdata/v1.0/stock/streaming"
@@ -128,7 +130,7 @@ func (client *WebSocketClient) listen() {
 		}
 
 		if client.onMessage != nil {
-			client.onMessage(message)
+			client.onMessage(string(message))
 		}
 	}
 }
