@@ -79,12 +79,7 @@ func (client *WebSocketClient) Close() error {
 		return nil
 	}
 
-	deadline := time.Now().Add(time.Minute)
-	err := client.Conn.WriteControl(
-		websocket.CloseMessage,
-		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
-		deadline,
-	)
+	err := client.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	if err != nil {
 		return err
 	}
