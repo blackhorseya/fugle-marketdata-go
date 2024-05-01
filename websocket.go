@@ -120,7 +120,7 @@ func (client *WebSocketClient) OnError(handler ErrorHandler) {
 }
 
 func (client *WebSocketClient) listen() {
-	for {
+	for client.isConnected {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
 			if client.onError != nil {
