@@ -118,15 +118,15 @@ func (client *WebSocketClient) OnError(handler ErrorHandler) {
 }
 
 func (client *WebSocketClient) listen() {
-	for client.isConnected {
+	for {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
 			if client.onError != nil {
 				client.onError(err)
 			}
-			client.isConnected = false
-			break
+			return
 		}
+
 		if client.onMessage != nil {
 			client.onMessage(message)
 		}
